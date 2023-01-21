@@ -1,6 +1,6 @@
 ## README
 
-This is a sample project for a Todo application, built using Django and Django Rest Framework.
+A sample project to showcase how to use Django, Django REST framework and PostgreSQL in a Docker container.
 
 ## Prerequisites
  - Docker
@@ -15,13 +15,15 @@ This is a sample project for a Todo application, built using Django and Django R
 DATABASE_NAME='todo_project'
 DATABASE_USER='todo_project_admin'
 DATABASE_PASSWORD='todo_project_pass'
-DATABASE_HOST='localhost'
+DATABASE_HOST='db'
 DATABASE_PORT=5432
 ENV="dev"
 ```
 3. Build the Docker images and start the containers:
-4. `docker-compose build`
-5. `docker-compose up`
+```
+docker-compose build
+docker-compose up
+```
 
 Once the containers are running, you should be able to access the application at http://localhost:8000/
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 python wait_for_db.py
 cd todo_project/

@@ -44,3 +44,7 @@ To stop the containers, use `docker-compose down`
 
 ## Deployment
 You can deploy this application to any platform that supports Docker and Docker Compose.
+
+- [ ] Deploy on ECS
+- [ ] Configure ELB
+

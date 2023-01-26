@@ -47,7 +47,7 @@ You can deploy this application to any platform that supports Docker and Docker 
 
 Below mentioned steps are for AWS ECS (with fargate)
 
-## Steps for deploying application on production (with ECS Fargate and Postgres Aurora Serverless):
+#### Steps for Deploying Application on Production (with ECS Fargate and Postgres Aurora Serverless)
   - Go To RDS and choose Aurora Serverless Postgres. Create a EC2 instance to login to the Postgres host and create your project specific database).
     Inside EC2 ->
      - `sudo yum install -y postgresql`

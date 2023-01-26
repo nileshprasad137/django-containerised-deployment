@@ -45,6 +45,34 @@ To stop the containers, use `docker-compose down`
 ## Deployment
 You can deploy this application to any platform that supports Docker and Docker Compose.
 
-- [ ] Deploy on ECS
-- [ ] Configure ELB
+Below mentioned steps are for AWS ECS (with fargate)
+
+## Steps for deploying application on production (with ECS Fargate and Postgres Aurora Serverless):
+  - Go To RDS and choose Aurora Serverless Postgres. Create a EC2 instance to login to the Postgres host and create your project specific database).
+    Inside EC2 ->
+     - `sudo yum install -y postgresql`
+     - Create your project db : `psql "postgres://<username>:<password>@<cluster-endpoint>:5432/postgres" -c "CREATE DATABASE todo_project"`
+  - Create an ECR repository to store your Docker image which can be done from CLI / Console.
+  - Build a production-specific Docker image using a Dockerfile.prod file with necessary dependencies and the gunicorn server.
+ `docker buildx build --platform=linux/amd64 -f Dockerfile.prod -t todo_project .` (This will ensure that the image is built for the linux/amd64 architecture)
+  - Push the image to the ECR repository.
+    - Login to aws ecr
+         `aws ecr get-login-password --region ap-south-1 --profile personal | docker login --username AWS --password-stdin <account_id>.dkr.ecr.ap-south-1.amazonaws.com`
+    - Tag your docker image
+        `docker tag todo_project:latest <account_id>.dkr.ecr.ap-south-1.amazonaws.com/todo_project:latest`
+    - Push to ECR
+        `docker push <account_id>.dkr.ecr.ap-south-1.amazonaws.com/todo_project:latest`
+  - Create an ECS task definition for your task and specify the necessary environment variables and container settings. Make sure you choose right ports (8000 in this project's case) and ecs has the required permissions / policies attached. Choose Fargate launch type if you don't want to have the headcahe of maintaing EC2 instances.
+  - Create ECS Cluster and choose the right VPC with appropriate n/w settings.
+  - Create an ECS service and configure it to use the desired task definition and image.
+Configure a load balancer to route traffic to the ECS service. This step must be done carefully. You would need to ensure you Load Balancer is able to access ECS containers on the spcified port or Health checks would keep failing.
+ - Modifying the security group or network ACL associated with the ECS task or the associated load balancer to allow traffic on the desired port.
+  - If the service is created successfully, ECS tasks would be in  `Running` state. 
+ 
+
+#### Challenges that you can run into:
+ 1. One of the challenges you may face during production deployment is ensuring that the container image is compatible with the architecture and operating system of the container you are trying to run it on. This can be resolved by building the image on the same architecture and operating system as the container, or by using a multi-architecture builder like buildx.
+ 2. If task does not connect to RDS, provide necessary permission to ecs using Policies.
+ 3. Another challenge may be configuring security groups or network ACLs to allow inbound traffic to the task on the specified port. This can be resolved by adding the necessary rules to the security group or network ACL.
+ 4. Another challenge may be configuring ELB to route to the ECS task. This can be resolved by allowing the hosts. (in `settings.py`)
 
